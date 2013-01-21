@@ -1,0 +1,13 @@
+project(lfft)
+
+cmake_minimum_required(VERSION 2.6)
+
+set(LFFT_VERSION_MAJOR 0)
+set(LFFT_VERSION_MINOR 1)
+set(LFFT_VERSION_PATCH 0)
+set(LFFT_VERSION ${LFFT_VERSION_MAJOR}.${LFFT_VERSION_MINOR}.${LFFT_VERSION_PATCH})
+
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+add_subdirectory(src)
+

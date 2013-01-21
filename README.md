@@ -1,4 +1,5 @@
 LambdaFFT
 =========
 
-LambdaFFT is an 
+an optimized FFT / IFFT algorithm for µControllers without FPU
+
