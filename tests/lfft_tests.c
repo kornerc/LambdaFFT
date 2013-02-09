@@ -25,13 +25,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
 
 #include <check.h>
 
 #include "lfft.h"
-#include <core/lfft_fft.c>
+#include "core/lfft_fft.c"
 
 START_TEST(test_f__lfft_is_power_2)
 {
@@ -68,7 +69,7 @@ for(i = start; i < stop; ++i) \
 { \
     lfft_sqrt_result = lfft_isqrt(i); \
     sqrt_result = ROUND(sqrt((float)i)); \
-    fail_unless(abs(lfft_sqrt_result-sqrt_result) <= 1, "False assumption: lfft_isqrt(%lu)=%d | sqrt(%lu)=%d\n", i, lfft_sqrt_result, i, sqrt_result); \
+    fail_unless(abs(lfft_sqrt_result-sqrt_result) <= 1, "False assumption: lfft_isqrt(%"PRIu16")=%d | sqrt(%"PRIu16")=%d\n", i, lfft_sqrt_result, i, sqrt_result); \
 }
 
     uint32_t i;
