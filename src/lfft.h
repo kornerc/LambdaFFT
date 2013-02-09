@@ -39,9 +39,9 @@
 extern "C" {
 #endif
 
-#include "core/lfft_config.h"
-#include "core/lfft_fft.h"
-#include "core/lfft_fft2.h"
+#include "lfft_config.h"
+#include "lfft_fft.h"
+#include "lfft_fft2.h"
 
 #ifdef __cplusplus
 }

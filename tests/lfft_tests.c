@@ -32,7 +32,7 @@
 #include <check.h>
 
 #include "lfft.h"
-#include "core/lfft_fft.c"
+#include "lfft_fft.c"
 
 START_TEST(test_f__lfft_is_power_2)
 {
