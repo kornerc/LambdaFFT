@@ -104,19 +104,21 @@ START_TEST(test_f_lfft_isqrt)
 }
 END_TEST
 
-void test_switching_table_test_loop(uint16_t samples, lfft_Fft * fft, uint16_t * switching_table)
+void test_switching_table_test_loop(uint16_t samples, uint16_t * switching_table)
 {
     uint16_t i;
+    lfft_Fft fft;
 
-    if(!lfft_fft_new(fft, samples))
+    if(!lfft_fft_new(&fft, samples))
     {
         for(i = 0; i < samples; ++i)
         {
-            fail_unless(fft->switching_table[i] == switching_table[i],
-                    "False assumption: fft->switching_table[%"PRIu16"]=%"PRIu16" | "
+            fail_unless(fft.switching_table[i] == switching_table[i],
+                    "False assumption: fft.switching_table[%"PRIu16"]=%"PRIu16" | "
                     "switching_table[%"PRIu16"]=%"PRIu16" (Samples = %"PRIu16")\n",
-                    i, fft->switching_table[i], i, switching_table[i], samples);
+                    i, fft.switching_table[i], i, switching_table[i], samples);
         }
+        lfft_fft_delete(&fft);
     }
 }
 
@@ -124,19 +126,18 @@ START_TEST(test_switching_table)
 {
     uint16_t samples;
     uint16_t * switching_table;
-    lfft_Fft fft;
 
     samples = 2;
     switching_table = (uint16_t *) calloc(samples, sizeof(uint16_t));
     switching_table[0] = B_0000; switching_table[1] = B_0001;
-    test_switching_table_test_loop(samples, &fft, switching_table);
+    test_switching_table_test_loop(samples, switching_table);
     free(switching_table);
 
     samples = 4;
     switching_table = (uint16_t *) calloc(samples, sizeof(uint16_t));
     switching_table[0] = B_0000; switching_table[1] = B_0010;
     switching_table[2] = B_0001; switching_table[3] = B_0011;
-    test_switching_table_test_loop(samples, &fft, switching_table);
+    test_switching_table_test_loop(samples, switching_table);
     free(switching_table);
 
     samples = 8;
@@ -145,7 +146,7 @@ START_TEST(test_switching_table)
     switching_table[2] = B_0010; switching_table[3] = B_0110;
     switching_table[4] = B_0001; switching_table[5] = B_0101;
     switching_table[6] = B_0011; switching_table[7] = B_0111;
-    test_switching_table_test_loop(samples, &fft, switching_table);
+    test_switching_table_test_loop(samples, switching_table);
     free(switching_table);
 
     samples = 16;
@@ -158,7 +159,7 @@ START_TEST(test_switching_table)
     switching_table[10] = B_0101; switching_table[11] = B_1101;
     switching_table[12] = B_0011; switching_table[13] = B_1011;
     switching_table[14] = B_0111; switching_table[15] = B_1111;
-    test_switching_table_test_loop(samples, &fft, switching_table);
+    test_switching_table_test_loop(samples, switching_table);
     free(switching_table);
 }
 END_TEST
@@ -185,21 +186,4 @@ int main()
     srunner_free(runner);
     return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-
-#undef B_0000
-#undef B_0001
-#undef B_0010
-#undef B_0011
-#undef B_0100
-#undef B_0101
-#undef B_0110
-#undef B_0111
-#undef B_1000
-#undef B_1001
-#undef B_1010
-#undef B_1011
-#undef B_1100
-#undef B_1101
-#undef B_1110
-#undef B_1111
 
