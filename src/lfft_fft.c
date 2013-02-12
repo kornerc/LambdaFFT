@@ -92,7 +92,7 @@ static void _lfft_fft_complex_float(lfft_Fft * fft, const float real[], const fl
 
 /*!
  * Checks if x is to the power of 2.
- * \param x number to be checkeds
+ * \param x number to be checked
  * \return true if x is to the power of 2, false if not
  */
 static bool _lfft_is_power_2(uint16_t x);

@@ -164,6 +164,101 @@ START_TEST(test_switching_table)
 }
 END_TEST
 
+void test_fft_ifft_loop_int(uint16_t samples, const int32_t real[], const int32_t imag[])
+{
+    uint16_t i;
+    bool error = false;
+    int32_t * result_fft_real = (int32_t *) calloc(samples, sizeof(int32_t));;
+    int32_t * result_fft_imag = (int32_t *) calloc(samples, sizeof(int32_t));;
+    lfft_Fft fft;
+    char buffer[0xfff];
+    char str[0xff];
+
+    if(!lfft_fft_new(&fft, samples))
+    {
+        sprintf(buffer, "False assumption:\n");
+        lfft_fft_complex(&fft, real, imag);
+        for(i = 0; i < samples; ++i)
+        {
+            result_fft_real[i] = lfft_fft_result_real_at(&fft, i);
+            result_fft_imag[i] = lfft_fft_result_imag_at(&fft, i);
+        }
+
+        lfft_ifft_complex(&fft, result_fft_real, result_fft_imag);
+        
+        for(i = 0; i < samples; ++i)
+        {
+            if((lfft_fft_result_real_at(&fft, i) != real[i]) ||
+                    (lfft_fft_result_imag_at(&fft, i) != imag[i]))
+            {
+                error = true;
+            }
+
+            sprintf(str, "lfft_fft_result_real_at(&fft, %"PRIu16")=%"PRId32" | "
+                    "real[%"PRIu16"]=%"PRId32"\n", i, lfft_fft_result_real_at(&fft, i),
+                    i, real[i]);
+            strcat(buffer, str);
+            sprintf(str, "lfft_fft_result_imag_at(&fft, %"PRIu16")=%"PRId32" | "
+                    "imag[%"PRIu16"]=%"PRId32"\n\n", i, lfft_fft_result_imag_at(&fft, i),
+                    i, imag[i]);
+            strcat(buffer, str);
+        }
+
+        fail_if(error, "%s", buffer);
+        lfft_fft_delete(&fft);
+    }
+
+    free(result_fft_real);
+    free(result_fft_imag);
+}
+
+START_TEST(test_fft_ifft)
+{
+    uint16_t i;
+    uint16_t samples = 8;
+    int32_t * data_real = (int32_t *) calloc(samples, sizeof(int32_t));
+    int32_t * data_imag = (int32_t *) calloc(samples, sizeof(int32_t));
+    int32_t * n_zeros   = (int32_t *) calloc(samples, sizeof(int32_t));
+    int32_t * n_ones    = (int32_t *) calloc(samples, sizeof(int32_t));
+
+    memset(n_zeros, 0, samples*sizeof(int32_t));
+    for(i = 0; i < samples; ++i)
+    {
+        n_ones[i]  = 1;
+    }
+
+    // data_real = {0, 0, 0, 0, 0, 0, 0, 0}
+    // data_imag = {0, 0, 0, 0, 0, 0, 0, 0}
+    memcpy(data_real, n_zeros, samples*sizeof(int32_t));
+    memcpy(data_imag, n_zeros, samples*sizeof(int32_t));
+    test_fft_ifft_loop_int(samples, data_real, data_imag);
+
+
+    // data_real = {1, 1, 1, 1, 1, 1, 1, 1}
+    // data_imag = {0, 0, 0, 0, 0, 0, 0, 0}
+    memcpy(data_real, n_ones,  samples*sizeof(int32_t));
+    memcpy(data_imag, n_zeros, samples*sizeof(int32_t));
+    test_fft_ifft_loop_int(samples, data_real, data_imag);
+
+    // data_real = {0, 0, 0, 0, 0, 0, 0, 0}
+    // data_imag = {1, 1, 1, 1, 1, 1, 1, 1}
+    memcpy(data_real, n_zeros, samples*sizeof(int32_t));
+    memcpy(data_imag, n_ones,  samples*sizeof(int32_t));
+    test_fft_ifft_loop_int(samples, data_real, data_imag);
+
+    // data_real = {1, 1, 1, 1, 1, 1, 1, 1}
+    // data_imag = {1, 1, 1, 1, 1, 1, 1, 1}
+    memcpy(data_real, n_ones, samples*sizeof(int32_t));
+    memcpy(data_imag, n_ones, samples*sizeof(int32_t));
+    test_fft_ifft_loop_int(samples, data_real, data_imag);
+
+    free(data_real);
+    free(data_imag);
+    free(n_zeros);
+    free(n_ones);
+}
+END_TEST
+
 Suite* a_suite()
 {
     Suite * suite = suite_create ("lfft");
@@ -171,6 +266,7 @@ Suite* a_suite()
     tcase_add_test(tcase, test_f__lfft_is_power_2);
     tcase_add_test(tcase, test_f_lfft_isqrt);
     tcase_add_test(tcase, test_switching_table);
+    tcase_add_test(tcase, test_fft_ifft);
     suite_add_tcase(suite, tcase);
 
     return suite;
